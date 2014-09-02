@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "async": "^0.9.0",
+    "aws2js": "^0.8.3",
+    "commander": "^2.3.0"
+  },
+  "name": "ec2-fleet-casper",
+  "description": "ec2-fleet-casper ================",
+  "version": "1.0.0",
+  "main": "aws.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nymedia/ec2-fleet-casper.git"
+  },
+  "author": "eirik@nymedia.no",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nymedia/ec2-fleet-casper/issues"
+  },
+  "homepage": "https://github.com/nymedia/ec2-fleet-casper"
+}
