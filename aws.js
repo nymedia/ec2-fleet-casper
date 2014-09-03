@@ -33,7 +33,10 @@ program
     var inst = [];
     var regions = config.regions;
     async.map(regions.map(getClient), getInstances, function(err, res) {
-      dumpInfo(inst);
+      if (err) {
+        throw(err);
+      }
+      dumpInfo(res);
     });
   });
 

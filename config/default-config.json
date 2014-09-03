@@ -7,5 +7,6 @@
       "temporaryInstance": "yes"
     },
     "controlPort": 8889,
-    "keyName": ""
+    "keyName": "",
+    "instanceType": "t1.micro"
 }
