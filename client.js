@@ -60,6 +60,7 @@ function startCaspers() {
   });
   c.on('close', function(c) {
     out.write(util.format('Client %s has ended with status code %d', id, c));
+    out.write("\n");
     stats.inproc--;
     stats.clients--;
     stats.ended_req++;
