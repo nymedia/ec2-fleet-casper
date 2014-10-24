@@ -209,7 +209,7 @@ function getInstances(client, callback) {
                     return;
 
                 // Check instance tags. All tags given in config must be the same.
-                if (config.instanceTags) {
+                if (config.instanceTags && instance.tagSet) {
                     var tags = {};
                     instance.tagSet.forEach(function(item) {tags[item.key] = item.value;});
                     for (var key in config.instanceTags)

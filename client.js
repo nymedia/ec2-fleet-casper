@@ -10,7 +10,10 @@ var spawn = require('child_process').spawn;
 
 var config = {};
 var stats = {};
-function reset() {
+var lastStatus = {};
+function reset(s) {
+  // Keeping lastStatus, for displaying in the "top" utility.
+  lastStatus = s;
   config = {
     n: 0,
     concurrency: 1,
@@ -74,7 +77,16 @@ function startCaspers() {
 // Controlling loop.
 setInterval(function() {
   if (stats.ended_req >= config.n) {
-    reset();
+    if (stats.ended_req > 0) {
+      // Reset stats if we have finished testing. Unless there are some clients
+      // that just happened to arrive late.
+      if (stats.clients < 0 || stats.inproc < 0) {
+        // Meh.
+      }
+      else {
+        reset(stats);
+      }
+    }
     return;
   }
   // Make connections if needed.
@@ -108,7 +120,7 @@ http.createServer(function (req, res) {
 
     if (url.pathname === '/') {
       // Return stats on '/'
-      return res.end(JSON.stringify(stats) + "\n");
+      return res.end(JSON.stringify({stats: stats, lastStatus: lastStatus}) + "\n");
     }
     else if (url.pathname === '/set') {
         // Set params on '/set', preserving the type of param.
