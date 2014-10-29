@@ -50,20 +50,25 @@ function startCaspers() {
   stats.inproc += 1;
   stats.clients += 1;
   var id = Math.random().toString(36).slice(2);
-  var c = spawn('casperjs', ['casper/casperscript.js']);
+  var c = spawn('casperjs', [
+    '--ignore-ssl-errors=true',
+    '--ssl-protocol=tlsv1',
+    'casper/casperscript.js'
+  ]);
   var out = fs.createWriteStream('casper/out.log', {
     'flags': 'a'
   });
 
   c.stdout.on('data', function(d) {
-    out.write(util.format('Data from client %s: %s', id, d));
+    d.split("\n").forEach(function(n) {
+      out.write(util.format('[DEBUG] %s: %s', id, n));
+    });
   });
   c.stderr.on('data', function(d) {
-    out.write(util.format('Error from client %s: %s', id, d));
+    out.write(util.format('[ERROR] %s: %s', id, d));
   });
   c.on('close', function(c) {
-    out.write(util.format('Client %s has ended with status code %d', id, c));
-    out.write("\n");
+    out.write(util.format('[EXIT] %s: Ended with status code %d' + "\n", id, c));
     stats.inproc--;
     stats.clients--;
     stats.ended_req++;

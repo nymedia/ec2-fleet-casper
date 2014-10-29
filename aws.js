@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var fs = require('fs'),
     http = require('http'),
     aws2js = require('aws2js'),
@@ -21,8 +23,10 @@ program
         command_given = true;
         var nInstances = +(num || 1);
         var regions = region ? [region] : config.regions;
-        for (var i = 0; i < nInstances; i++)
-            startInstance(getClient(regions[i%regions.length])); // Start equally in all regions.
+        for (var i = 0; i < nInstances; i++) {
+          // Start equally in all regions.
+          startInstance(getClient(regions[i%regions.length]));
+        }
     });
 
 program
@@ -30,7 +34,6 @@ program
   .description('Dump all casperJS data to your computer.')
   .action(function() {
     command_given = true;
-    var inst = [];
     var regions = config.regions;
     async.map(regions.map(getClient), getInstances, function(err, res) {
       if (err) {
@@ -44,23 +47,29 @@ program
     .command('stop [num] [region]')
     .description('Remove <num> AWS instances. Default = 1. Accepts \'all\'.')
     .action(function(num, region) {
-        command_given = true;
-        var nInstances = (num == "all") ? 10000 : +(num || 1);
-        var regions = region ? [region] : config.regions;
-        async.map(regions.map(getClient), getInstances, function(err, res) {
-            var instanceCount = res.map(function(r){return r.length;}).reduce(function(a,b){return a+b}, 0);
-            nInstances = Math.min(nInstances, instanceCount);
-            var regionId = -1;
-            var instancesToTerminate = regions.map(function() {return [];});
-            for (var i = 0; i < nInstances; i++) {
-                regionId = (regionId+1) % regions.length;
-                while (res[regionId].length === 0) regionId = (regionId+1) % regions.length;
-                instancesToTerminate[regionId].push(res[regionId].shift().instanceId);
-            }
-            for (var i = 0; i < regions.length; i++) {
-                stopInstances(getClient(regions[i]), instancesToTerminate[i]);
-            }
-        });
+      command_given = true;
+      var nInstances = (num === "all") ? 10000 : +(num || 1);
+      var regions = region ? [region] : config.regions;
+      async.map(regions.map(getClient), getInstances, function(err, res) {
+        var instanceCount = res.map(function(r) {
+          return r.length;
+        }).reduce(function(a,b) {
+          return a+b;
+        }, 0);
+        nInstances = Math.min(nInstances, instanceCount);
+        var regionId = -1;
+        var instancesToTerminate = regions.map(function() {return [];});
+        for (var i = 0; i < nInstances; i++) {
+          regionId = (regionId+1) % regions.length;
+          while (res[regionId].length === 0) {
+            regionId = (regionId+1) % regions.length;
+          }
+          instancesToTerminate[regionId].push(res[regionId].shift().instanceId);
+        }
+        for (i = 0; i < regions.length; i++) {
+          stopInstances(getClient(regions[i]), instancesToTerminate[i]);
+        }
+      });
     });
 
 program
