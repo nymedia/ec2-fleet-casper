@@ -253,9 +253,10 @@ function pad(str, width) { while(str.length < width) str=" "+str; return str; }
 var status = [], statusRegions = []; // Array of arrays of instances
 var updaters = {}; // instance-id -> {lastUpdateTime: .., updateReq: ..., updateRes: {}}
 function printStatus() {
-    process.stdout.write("\033c"); // Clear screen.
-    status.forEach(function(regionInstances, i) {
+  process.stdout.write('\u001B[2J\u001B[0;0f');
+  status.forEach(function(regionInstances, i) {
         console.log(statusRegions[i] + ": ");
+        var num = 0;
         regionInstances.forEach(function(inst) {
             var message = "Unknown";
             var u = updaters[inst.instanceId];
@@ -266,6 +267,15 @@ function printStatus() {
                 if (u.updateErr) message += " ["+u.updateErr.code+"]";
             }
             console.log("  "+inst.instanceId+"["+inst.instanceState.name+"]: "+message);
+            try {
+              var d = JSON.parse(message);
+              if (d && d.lastStatus && d.lastStatus.errors_req) {
+                num = num + parseInt(d.lastStatus.errors_req, 10);
+              }
+            }
+            catch (err) {
+              // Meh.
+            }
 
             if (!u) updaters[inst.instanceId] = u = {lastUpdateTime: Date.now(), lastReqTime: 0, updateRes: {}};
             var rt = Date.now()-u.lastReqTime;
@@ -295,6 +305,7 @@ function printStatus() {
                 }
             }
         });
+        console.log('Total errors in region on last completed run: %d', num);
     });
 }
 
