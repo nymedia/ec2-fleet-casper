@@ -268,7 +268,7 @@ function printStatus() {
             }
             console.log("  "+inst.instanceId+"["+inst.instanceState.name+"]: "+message);
             try {
-              var d = JSON.parse(message);
+              var d = u.updateRes;
               if (d && d.lastStatus && d.lastStatus.errors_req) {
                 num = num + parseInt(d.lastStatus.errors_req, 10);
               }
