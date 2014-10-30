@@ -83,6 +83,20 @@ program
     });
 
 program
+    .command('restart')
+    .description('Restart all instances')
+    .action(function() {
+        command_given = true;
+        var regions = config.regions;
+        regions.map(getClient).forEach(function(client) {
+            getInstances(client, function(err, instances) {
+                for (var i = 0; i < instances.length; i++) {
+                    sendParam(client, instances[i], 'restart', 1);
+                }
+            });
+        });
+    });
+program
     .command('set <param> <value>')
     .description('Set a parameter to given value in all current instances.')
     .action(function(param, val) {
