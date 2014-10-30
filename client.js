@@ -52,20 +52,22 @@ function startCaspers() {
   var id = Math.random().toString(36).slice(2);
   var c = spawn('casperjs', [
     '--ignore-ssl-errors=true',
+    '--log-level=error',
     '--ssl-protocol=tlsv1',
-    'casper/casperscript.js'
+    'casper/casperscript.js',
+    id
   ]);
   var out = fs.createWriteStream('casper/out.log', {
     'flags': 'a'
   });
 
   c.stdout.on('data', function(d) {
-    d.split("\n").forEach(function(n) {
-      out.write(util.format('[DEBUG] %s: %s', id, n));
+    d.toString().split("\n").forEach(function(n) {
+      out.write(util.format('[DEBUG] %s: %s' + "\n", id, n));
     });
   });
   c.stderr.on('data', function(d) {
-    out.write(util.format('[ERROR] %s: %s', id, d));
+    out.write(util.format('[ERROR] %s: %s' + "\n", id, d));
   });
   c.on('close', function(c) {
     out.write(util.format('[EXIT] %s: Ended with status code %d' + "\n", id, c));
