@@ -8,7 +8,7 @@
   },
   "name": "ec2-fleet-casper",
   "description": "ec2-fleet-casper ================",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "aws.js",
   "devDependencies": {},
   "scripts": {
