@@ -63,6 +63,9 @@ function startCaspers() {
 
   c.stdout.on('data', function(d) {
     d.toString().split("\n").forEach(function(n) {
+      if (!n || !n.length) {
+        return;
+      }
       out.write(util.format('[DEBUG] %s: %s' + "\n", id, n));
     });
   });
