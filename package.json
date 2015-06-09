@@ -10,7 +10,11 @@
   "description": "ec2-fleet-casper ================",
   "version": "0.2.0",
   "main": "aws.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "istanbul": "^0.3.2",
+    "mocha": "^2.0.1",
+    "should": "^4.3.0"
+  },
   "scripts": {
     "test": "mocha"
   },

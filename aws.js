@@ -130,7 +130,8 @@ function normalizeResponse(obj, key) { // Handles quirks of xml-to-js transforma
     return obj;
 }
 
-var regionInstances = { // We are interested in Ubuntu Server 14.04 LTS.
+var regionInstances = {
+  // We are interested in Ubuntu Server 14.04 LTS.
   "eu-west-1": "ami-3907d64e"
 };
 

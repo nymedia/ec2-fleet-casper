@@ -61,19 +61,29 @@ function startCaspers() {
     'flags': 'a'
   });
 
+  var log = function(type, message) {
+    var m = {
+      type: type,
+      message: message,
+      date: Date.now(),
+      id: id
+    };
+    out.write(JSON.stringify(m) + "\n");
+  };
+
   c.stdout.on('data', function(d) {
     d.toString().split("\n").forEach(function(n) {
       if (!n || !n.length) {
         return;
       }
-      out.write(util.format('[DEBUG] %s: %s' + "\n", id, n));
+      log('debug', n);
     });
   });
   c.stderr.on('data', function(d) {
-    out.write(util.format('[ERROR] %s: %s' + "\n", id, d));
+    log('error', d);
   });
   c.on('close', function(c) {
-    out.write(util.format('[EXIT] %s: Ended with status code %d' + "\n", id, c));
+    log('exit', util.format('Ended with status code %d' + "\n", c));
     stats.inproc--;
     stats.clients--;
     stats.ended_req++;
@@ -146,7 +156,9 @@ http.createServer(function (req, res) {
             }
           }
         }
-        return res.end(JSON.stringify(config) + "\n");
+        var response = config;
+        response.date = new Date().toString();
+        return res.end(JSON.stringify(response) + "\n");
 
     }
     else if (url.pathname === '/restart') {
