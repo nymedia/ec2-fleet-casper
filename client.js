@@ -11,6 +11,7 @@ var spawn = require('child_process').spawn;
 var config = {};
 var stats = {};
 var lastStatus = {};
+var clients = {};
 function reset(s) {
   // Keeping lastStatus, for displaying in the "top" utility.
   lastStatus = s;
@@ -27,11 +28,21 @@ function reset(s) {
     ended_req: 0,
     has_script: stats.has_script || false
   };
+  // Try to crash the clients that are still running.
+  console.log('Did reset, will try to do client kill. Current client count:', Object.keys(clients).length);
+  var keys = Object.keys(clients);
+  for (var i = 0; i < keys.length; i++) {
+    try {
+      clients[keys[i]].kill();
+    }
+    catch(e) {
+      console.log('Caught exception when trying to kill a client:', e);
+    }
+    stats.clients--;
+    delete clients[keys[i]];
+  }
 }
 reset();
-
-
-var clients = {};
 
 function getScript() {
   console.log('downloading script from ' + config.testScript);
@@ -80,7 +91,7 @@ function startCaspers() {
     });
   });
   c.stderr.on('data', function(d) {
-    log('error', d);
+    log('error', 'STDERR DATA: ' + d);
   });
   c.on('close', function(c) {
     log('exit', util.format('Ended with status code %d' + "\n", c));
@@ -91,7 +102,9 @@ function startCaspers() {
       stats.errors_req++;
     }
     out.end();
+    delete clients[id];
   });
+  clients[id] = c;
 }
 
 // Controlling loop.
@@ -113,16 +126,6 @@ setInterval(function() {
   while (config.n > stats.clients + stats.inproc &&
          stats.inproc < config.concurrency) {
     startCaspers();
-  }
-
-  // Abort connections if needed.
-  if (config.n < stats.clients) {
-    var keys = Object.keys(clients).slice(0, stats.clients-config.n);
-    for (var i = 0; i < keys.length; i++) {
-      clients[keys[i]].abort();
-      stats.clients--;
-      delete clients[keys[i]];
-    }
   }
 }, 100);
 
