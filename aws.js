@@ -131,8 +131,8 @@ function normalizeResponse(obj, key) { // Handles quirks of xml-to-js transforma
 }
 
 var regionInstances = {
-  // We are interested in Ubuntu Server 14.04 LTS.
-  "eu-west-1": "ami-3907d64e"
+  // We are interested in Ubuntu Server 16.04 LTS.
+  "eu-west-1": "ami-045a58975c6b7ef82"
 };
 
 var clients = {}; // {<region>: <ec2 client>}
