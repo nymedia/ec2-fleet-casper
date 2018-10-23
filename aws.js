@@ -323,7 +323,8 @@ function printStatus() {
 }
 
 function updateInstances(regions) {
-    async.map(regions.map(getClient), getInstances, function(err, res) {
+    var clients = regions.map(getClient);
+    async.map(clients, getInstances, function(err, res) {
         if (err) return console.error("DescribeInstances error: "+JSON.stringify(err));
         status = res;
         statusRegions = regions;

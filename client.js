@@ -60,14 +60,19 @@ function getScript() {
 function startCaspers() {
   stats.inproc += 1;
   stats.clients += 1;
+  var currentPath = process.env.PATH + ':' + __dirname + '/node_modules/.bin';
   var id = Math.random().toString(36).slice(2);
-  var c = spawn('casperjs', [
+  var c = spawn('./node_modules/.bin/casperjs', [
     '--ignore-ssl-errors=true',
     '--log-level=error',
     '--ssl-protocol=tlsv1',
     'casper/casperscript.js',
     id
-  ]);
+  ], {
+    env: {
+      PATH: currentPath
+    }
+  });
   var out = fs.createWriteStream('casper/out.log', {
     'flags': 'a'
   });
