@@ -220,7 +220,13 @@ function stopInstances(client, instanceIdArray) {
 
 function getInstances(client, callback) {
     client.request("DescribeInstances", function(err, resp) {
-        if (err) return callback(err);
+        try {
+            if (err) return callback(err);
+        }
+        catch (e) {
+            console.log(err)
+        }
+
         resp = normalizeResponse(resp);
 
         var instances = [];
@@ -245,7 +251,13 @@ function getInstances(client, callback) {
                 instances.push(instance);
             });
         });
-        callback(null, instances);
+        try {
+            callback(null, instances);
+        }
+        catch (e) {
+            // Hopefully fine.
+        }
+
     });
 }
 
