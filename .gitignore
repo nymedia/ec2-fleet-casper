@@ -1,4 +1,5 @@
 dumps
+.vscode
 config/default.json
 *.tar.gz
 casper
