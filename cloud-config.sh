@@ -3,9 +3,8 @@
 # User: root.
 
 # Install latest stable node.js
-curl -sL https://deb.nodesource.com/setup | sudo bash -
+curl -sL https://deb.nodesource.com/setup_8.x | sudo bash -
 apt-get install -y nodejs libfontconfig1 vim curl
-npm i -g phantomjs casperjs
 
 # Write our client code.
 sudo -u ubuntu tee -a /home/ubuntu/client.js > /dev/null <<"EOF"
@@ -13,24 +12,28 @@ sudo -u ubuntu tee -a /home/ubuntu/client.js > /dev/null <<"EOF"
 EOF
 
 # Write Upstart job.
-cat > /etc/init/client.conf <<"EOF"
-    start on runlevel [2345]
+mkdir /var/log/upstart
+cat > /etc/systemd/system/client.service <<"EOF"
+[Service]
+ExecStart=/usr/bin/node /home/ubuntu/client.js 2>&1 >> /var/log/upstart/client.log
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=node
+User=ubuntu
+Group=ubuntu
+Environment=NODE_ENV=production
+WorkingDirectory=/home/ubuntu
 
-    respawn
-    respawn limit 10 5 # max 10 times within 5 seconds
-
-    setuid ubuntu
-    chdir /home/ubuntu
-    limit nofile 100000 100000
-
-    exec node client.js
+[Install]
+WantedBy=multi-user.target
 EOF
 
-# The upstart job will launch our client and keep it alive.
 # Output is written to /var/log/upstart/client.log
-initctl reload-configuration
+systemctl daemon-reload
 cd /home/ubuntu
 mkdir /home/ubuntu/casper
 chown ubuntu /home/ubuntu/casper
-npm i request fstream tar
-start client
+npm i request fstream tar phantomjs-prebuilt casperjs
+echo 'PATH=$PATH:/home/ubuntu/node_modules/.bin' >> .bashrc 
+service client start
