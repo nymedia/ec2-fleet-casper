@@ -153,21 +153,18 @@ http.createServer(function (req, res) {
     else if (url.pathname === '/set') {
         // Set params on '/set', preserving the type of param.
         for (var key in url.query) {
-          if (url.query.hasOwnProperty(key)) {
-            var value = url.query[key];
-            if (typeof config[key] === 'number') {
-              value = parseInt(url.query[key], 10);
-            }
-            config[key] = value;
-            if (key === 'testScript') {
-              getScript();
-            }
+          var value = url.query[key];
+          if (typeof config[key] === 'number') {
+            value = parseInt(url.query[key], 10);
+          }
+          config[key] = value;
+          if (key === 'testScript') {
+            getScript();
           }
         }
         var response = config;
         response.date = new Date().toString();
         return res.end(JSON.stringify(response) + "\n");
-
     }
     else if (url.pathname === '/restart') {
       // Restart process on '/restart'
