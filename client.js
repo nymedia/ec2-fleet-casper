@@ -173,9 +173,12 @@ http.createServer(function (req, res) {
     }
     else if (url.pathname === '/dump') {
       // Compress all casper data and dump back to user.
-      return fstream.Reader({ 'path': './casper/', 'type': 'Directory' })
-      .pipe(tar.Pack())
-      .pipe(zlib.Gzip())
+      return tar.c(
+        {
+          gzip: true
+        },
+        ['casper']
+      )
       .pipe(res);
     }
   }

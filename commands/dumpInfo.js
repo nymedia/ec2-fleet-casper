@@ -14,7 +14,10 @@ module.exports = function(data) {
         .pipe(s)
         .on('end', function() {
           s.end();
-        });
+        })
+        .on('error', function(e) {
+          console.log(e)
+        })
       });
     });
   });
