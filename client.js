@@ -168,7 +168,7 @@ http.createServer(function (req, res) {
     }
     else if (url.pathname === '/restart') {
       // Restart process on '/restart'
-      require('child_process').exec("sudo restart client", function() {});
+      require('child_process').exec("sudo service client restart", function() {});
       return res.end("OK\n");
     }
     else if (url.pathname === '/dump') {
