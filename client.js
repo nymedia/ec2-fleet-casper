@@ -12,7 +12,10 @@ var config = {};
 var stats = {};
 var lastStatus = {};
 var clients = {};
+var started = false;
+
 function reset(s) {
+  started = false;
   // Keeping lastStatus, for displaying in the "top" utility.
   lastStatus = s;
   config = {
@@ -58,6 +61,7 @@ function getScript() {
 }
 
 function startCaspers() {
+  started = true;
   stats.inproc += 1;
   stats.clients += 1;
   var currentPath = process.env.PATH + ':' + __dirname + '/node_modules/.bin';
@@ -99,7 +103,12 @@ function startCaspers() {
     log('error', 'STDERR DATA: ' + d);
   });
   c.on('close', function(c) {
-    log('exit', util.format('Ended with status code %d' + "\n", c));
+    if (started) {
+      log('exit', util.format('Ended with status code %d' + "\n", c));
+    }
+    else {
+      log('exit', util.format('Ended with status code %d (probably killed)' + "\n", c));
+    }
     stats.inproc--;
     stats.clients--;
     stats.ended_req++;

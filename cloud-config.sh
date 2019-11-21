@@ -5,7 +5,7 @@
 # Install latest stable node.js
 curl -sL https://deb.nodesource.com/setup_8.x | sudo bash -
 apt-get install -y nodejs libfontconfig1 vim curl
-
+mkdir /home/ubuntu/casper
 # Write our client code.
 sudo -u ubuntu tee -a /home/ubuntu/client.js > /dev/null <<"EOF"
 <%=client.js%>
@@ -15,7 +15,7 @@ EOF
 mkdir /var/log/upstart
 cat > /etc/systemd/system/client.service <<"EOF"
 [Service]
-ExecStart=/usr/bin/node /home/ubuntu/client.js 2>&1 >> /var/log/upstart/client.log
+ExecStart=/usr/bin/node /home/ubuntu/client.js 2>&1 >> /home/ubuntu/casper/client.log
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
@@ -32,7 +32,6 @@ EOF
 # Output is written to /var/log/upstart/client.log
 systemctl daemon-reload
 cd /home/ubuntu
-mkdir /home/ubuntu/casper
 chown ubuntu /home/ubuntu/casper
 npm i request fstream tar phantomjs-prebuilt casperjs
 echo 'PATH=$PATH:/home/ubuntu/node_modules/.bin' >> .bashrc 
