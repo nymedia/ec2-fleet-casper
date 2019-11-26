@@ -15,7 +15,7 @@ EOF
 mkdir /var/log/upstart
 cat > /etc/systemd/system/client.service <<"EOF"
 [Service]
-ExecStart=/usr/bin/node /home/ubuntu/client.js 2>&1 >> /home/ubuntu/casper/client.log
+ExecStart=/bin/bash -ce "exec /usr/bin/node /home/ubuntu/client.js >> /home/ubuntu/casper/client.log 2>&1"
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
